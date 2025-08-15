@@ -177,7 +177,7 @@
                 return;
             }
 
-            const apiUrl = `/proxy?nickname=${encodeURIComponent(nickname)}`;
+            const apiUrl = `https://wt-api.vercel.app/proxy?nickname=${encodeURIComponent(nickname)}`;
             try {
                 const response = await fetch(apiUrl, {
                     method: 'GET',
