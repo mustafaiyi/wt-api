@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wolfteam Klan Bilgi Sorgulama</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Lora', serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        @keyframes glow-h1 {
+            0% { text-shadow: 0 0 3px rgba(255, 255, 255, 0.3), 0 0 6px rgba(255, 255, 255, 0.2); }
+            50% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.5), 0 0 8px rgba(255, 255, 255, 0.3); }
+            100% { text-shadow: 0 0 3px rgba(255, 255, 255, 0.3), 0 0 6px rgba(255, 255, 255, 0.2); }
+        }
+        @keyframes glow-h2 {
+            0% { text-shadow: 0 0 3px rgba(255, 255, 255, 0.3), 0 0 6px rgba(255, 255, 255, 0.2); }
+            50% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.5), 0 0 8px rgba(255, 255, 255, 0.3); }
+            100% { text-shadow: 0 0 3px rgba(255, 255, 255, 0.3), 0 0 6px rgba(255, 255, 255, 0.2); }
+        }
+
+        .wp-block-heading.h1-style {
+            font-family: 'Lora', serif;
+            font-weight: 400;
+            font-size: 1.4em;
+            color: #e0e0e0;
+            text-align: center;
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.3);
+            animation: glow-h1 2.5s ease-in-out infinite;
+            padding: 0;
+            letter-spacing: 1px;
+            display: block;
+            margin: 0 auto 20px auto;
+        }
+        .wp-block-heading.h2-style {
+            font-family: 'Playfair Display', serif;
+            font-weight: 400;
+            font-size: 1.5em;
+            color: #e0e0e0;
+            text-align: center;
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.3);
+            animation: glow-h2 2.5s ease-in-out infinite;
+            padding: 10px 20px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .search-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .search-container input {
+            padding: 10px;
+            font-family: 'Lora', serif;
+            font-size: 1em;
+            color: #e0e0e0;
+            background-color: #2c2c2c;
+            border: 1px solid #444;
+            border-radius: 5px;
+            width: 200px;
+            margin-right: 10px;
+        }
+        .search-container button {
+            padding: 10px 20px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1em;
+            color: #e0e0e0;
+            background-color: #3a3a3a;
+            border: 1px solid #555;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .search-container button:hover {
+            background-color: #555;
+        }
+
+        .result-container {
+            background-color: #2c2c2c;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 100%;
+            margin-top: 20px;
+            font-family: 'Lora', serif;
+            display: none;
+        }
+        .result-container h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: #ffffff;
+            text-align: center;
+        }
+        .result-container table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .result-container table td {
+            padding: 8px;
+            border-bottom: 1px solid #444;
+            color: #e0e0e0;
+        }
+        .result-container table td:first-child {
+            font-weight: bold;
+            color: #ffffff;
+            width: 40%;
+        }
+        .error-message {
+            color: #ff5555;
+            font-family: 'Lora', serif;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="wp-block-heading h1-style has-text-align-center"><strong>Respect Serkan Çakýr</strong></h1>
+    <h2 class="wp-block-heading h2-style has-text-align-center">TechTekno hayratýdýr dilediðiniz gibi kullanabilirsiniz</h2>
+
+    <div class="search-container">
+        <input type="text" id="nickname" placeholder="Kullanýcý adý girin" />
+        <button onclick="fetchUserData()">Ara</button>
+    </div>
+
+    <div class="result-container" id="result">
+        <h3>Kullanýcý Bilgileri</h3>
+        <table>
+            <tr><td>Sýralama</td><td id="rank"></td></tr>
+            <tr><td>Seviye</td><td id="grade"></td></tr>
+            <tr><td>Önceki Sýralama</td><td id="prevRank"></td></tr>
+            <tr><td>Hesap</td><td id="account"></td></tr>
+            <tr><td>Ýsim</td><td id="name"></td></tr>
+            <tr><td>Klan</td><td id="clanName"></td></tr>
+            <tr><td>Klan Lideri</td><td id="clanMaster"></td></tr>
+            <tr><td>Deneyim</td><td id="exp"></td></tr>
+            <tr><td>Galibiyet</td><td id="win"></td></tr>
+            <tr><td>Maðlubiyet</td><td id="lose"></td></tr>
+            <tr><td>Öldürme</td><td id="kill"></td></tr>
+            <tr><td>Ölüm</td><td id="dead"></td></tr>
+            <tr><td>Kafa Vuruþu</td><td id="headShot"></td></tr>
+            <tr><td>Kurt Öldürme</td><td id="wolfKill"></td></tr>
+            <tr><td>Toplam Tur</td><td id="totalRound"></td></tr>
+            <tr><td>Kutu Sayýsý</td><td id="boxCount"></td></tr>
+            <tr><td>Oyun Süresi</td><td id="playTime"></td></tr>
+            <tr><td>Favori Harita</td><td id="favouriteMap"></td></tr>
+            <tr><td>Favori Silah</td><td id="favouriteWeapon"></td></tr>
+            <tr><td>Favori Oyun Modu</td><td id="favouriteGameMode"></td></tr>
+            <tr><td>Son Giriþ</td><td id="lastLoginDate"></td></tr>
+            <tr><td>Hesap Oluþturma</td><td id="userCreateDate"></td></tr>
+        </table>
+    </div>
+    <div class="error-message" id="error">Hata: Kullanýcý bulunamadý veya veri alýnamadý.</div>
+
+    <script>
+        async function fetchUserData() {
+            const nickname = document.getElementById('nickname').value.trim();
+            const resultContainer = document.getElementById('result');
+            const errorMessage = document.getElementById('error');
+
+            if (!nickname) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = 'Lütfen bir kullanýcý adý girin.';
+                resultContainer.style.display = 'none';
+                return;
+            }
+
+            const apiUrl = `/proxy?nickname=${encodeURIComponent(nickname)}`;
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+                const data = await response.json();
+
+                if (data.Succeeded && data.Data) {
+                    errorMessage.style.display = 'none';
+                    resultContainer.style.display = 'block';
+
+                    document.getElementById('rank').textContent = data.Data.Rank || '-';
+                    document.getElementById('grade').textContent = data.Data.Grade || '-';
+                    document.getElementById('prevRank').textContent = data.Data.PrevRank || '-';
+                    document.getElementById('account').textContent = data.Data.Account || '-';
+                    document.getElementById('name').textContent = data.Data.Name || '-';
+                    document.getElementById('clanName').textContent = data.Data.ClanName || '-';
+                    document.getElementById('clanMaster').textContent = data.Data.ClanMaster || '-';
+                    document.getElementById('exp').textContent = data.Data.Exp || '-';
+                    document.getElementById('win').textContent = data.Data.Win || '-';
+                    document.getElementById('lose').textContent = data.Data.Lose || '-';
+                    document.getElementById('kill').textContent = data.Data.Kill || '-';
+                    document.getElementById('dead').textContent = data.Data.Dead || '-';
+                    document.getElementById('headShot').textContent = data.Data.HeadShot || '-';
+                    document.getElementById('wolfKill').textContent = data.Data.WolfKill || '-';
+                    document.getElementById('totalRound').textContent = data.Data.TotalRound || '-';
+                    document.getElementById('boxCount').textContent = data.Data.BoxCount || '-';
+                    document.getElementById('playTime').textContent = `${Math.floor(data.Data.PlayTime / 3600)} saat` || '-';
+                    document.getElementById('favouriteMap').textContent = data.Data.FavouriteMap?.Name || '-';
+                    document.getElementById('favouriteWeapon').textContent = data.Data.FavouriteWeapon?.Name || '-';
+                    document.getElementById('favouriteGameMode').textContent = data.Data.FavouriteGameMode?.Name || '-';
+                    document.getElementById('lastLoginDate').textContent = new Date(data.Data.LastLoginDate.match(/\d+/)[0] * 1).toLocaleString('tr-TR') || '-';
+                    document.getElementById('userCreateDate').textContent = new Date(data.Data.UserCreateDate.match(/\d+/)[0] * 1).toLocaleString('tr-TR') || '-';
+                } else {
+                    errorMessage.style.display = 'block';
+                    errorMessage.textContent = data.Message || 'Kullanýcý bulunamadý veya veri alýnamadý.';
+                    resultContainer.style.display = 'none';
+                }
+            } catch (error) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = 'Bir hata oluþtu: ' + error.message;
+                resultContainer.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
